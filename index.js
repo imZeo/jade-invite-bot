@@ -1,11 +1,28 @@
 require("dotenv").config();
-const { Client, GatewayIntentBits, Partials, Events, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  Partials,
+  Events,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  EmbedBuilder,
+} = require("discord.js");
 
-const EPHEMERAL = 1 << 6; 
+const EPHEMERAL = 1 << 6;
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent],
-  partials: [Partials.Channel]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.MessageContent,
+  ],
+  partials: [Partials.Channel],
 });
 
 client.once(Events.ClientReady, async () => {
@@ -16,71 +33,77 @@ client.once(Events.ClientReady, async () => {
   await applyChannel.send({
     content: "Ready to join the guild?",
     components: [
-     new ActionRowBuilder().addComponents(
+      new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId("apply_now")
           .setLabel("📩 Apply to Join")
-          .setStyle(ButtonStyle.Primary)
-      )
-    ]
+          .setStyle(ButtonStyle.Primary),
+      ),
+    ],
   });
 });
 
-client.on(Events.InteractionCreate, async interaction => {
+client.on(Events.InteractionCreate, async (interaction) => {
   // Apply button click
-  if (interaction.isButton() && interaction.customId === 'apply_now') {
+  if (interaction.isButton() && interaction.customId === "apply_now") {
     const modal = new ModalBuilder()
-      .setCustomId('submit_application')
-      .setTitle('Guild Application')
+      .setCustomId("submit_application")
+      .setTitle("Guild Application")
       .addComponents(
         new ActionRowBuilder().addComponents(
           new TextInputBuilder()
-            .setCustomId('ign')
-            .setLabel('Enter your in-game name (e.g., zeo.1026)')
+            .setCustomId("ign")
+            .setLabel("Enter your in-game name (e.g., zeo.1026)")
             .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-        )
+            .setRequired(true),
+        ),
       );
     await interaction.showModal(modal);
   }
 
   // Modal submission
-  if (interaction.isModalSubmit() && interaction.customId === 'submit_application') {
-    const ign = interaction.fields.getTextInputValue('ign').trim();
-const ignRegex = /^[a-zA-Z0-9]{2,32}\.\d{4}$/;
+  if (
+    interaction.isModalSubmit() &&
+    interaction.customId === "submit_application"
+  ) {
+    const ign = interaction.fields.getTextInputValue("ign").trim();
+    const ignRegex = /^[a-zA-Z0-9]{2,32}\.\d{4}$/;
 
-if (!ignRegex.test(ign)) {
-  return await interaction.reply({
-    content: "❌ Invalid IGN format.\nPlease click **Apply** again and enter a valid IGN like `zeo.1234`.",
-    flags: EPHEMERAL
-  });
-}
+    if (!ignRegex.test(ign)) {
+      return await interaction.reply({
+        content:
+          "❌ Invalid IGN format.\nPlease click **Apply** again and enter a valid IGN like `zeo.1234`.",
+        flags: EPHEMERAL,
+      });
+    }
 
     const member = await interaction.guild.members.fetch(client.user.id);
     const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
 
-    const officerChannel = await client.channels.fetch(process.env.OFFICER_CHANNEL_ID);
+    const officerChannel = await client.channels.fetch(
+      process.env.OFFICER_CHANNEL_ID,
+    );
     const embed = new EmbedBuilder()
       .setTitle("📝 New Guild Application")
       .addFields(
         { name: "IGN", value: ign },
         { name: "Discord User", value: member.user.tag },
-        { name: "Time", value: timestamp }
+        { name: "Time", value: timestamp },
       )
-      .setColor(0x00AE86)
+      .setColor(0x00ae86)
       .setFooter({ text: `User ID: ${member.id}` });
 
-const actionRow = new ActionRowBuilder().addComponents(
-  new ButtonBuilder()
-    .setCustomId(`copy_${member.id}_${encodeURIComponent(ign)}`)
-    .setLabel('📋 Copy IGN')
-    .setStyle(ButtonStyle.Secondary),
+    const actionRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`copy_${member.id}_${encodeURIComponent(ign)}`)
+        .setLabel("📋 Copy IGN")
+        .setStyle(ButtonStyle.Secondary),
 
-  new ButtonBuilder()
-    .setCustomId(`promote_${member.id}`)
-    .setLabel('✅ Promote')
-    .setStyle(ButtonStyle.Success)
-);
+      new ButtonBuilder()
+        .setCustomId(`promote_${member.id}`)
+        .setLabel("✅ Promote")
+        .setStyle(ButtonStyle.Success),
+    );
 
     await officerChannel.send({ embeds: [embed], components: [actionRow] });
 
@@ -93,12 +116,21 @@ const actionRow = new ActionRowBuilder().addComponents(
 
     // DM fallback
     try {
-      await member.send("✅ Your application has been submitted! Officers will be in touch.");
+      await member.send(
+        "✅ Your application has been submitted! Officers will be in touch.",
+      );
     } catch {
-      await interaction.reply({ content: "✅ Application received! Officers will reach out soon.", ephemeral: true });
+      await interaction.reply({
+        content: "✅ Application received! Officers will reach out soon.",
+        ephemeral: true,
+      });
     }
 
-    if (!interaction.replied) await interaction.reply({ content: "✅ Application submitted!", ephemeral: true });
+    if (!interaction.replied)
+      await interaction.reply({
+        content: "✅ Application submitted!",
+        ephemeral: true,
+      });
   }
 
   // Officer promotes
@@ -111,36 +143,35 @@ const actionRow = new ActionRowBuilder().addComponents(
     await user.roles.add(process.env.MEMBER_ROLE_ID);
 
     const ign = "UNKNOWN"; // fallback
-const parts = interaction.message.embeds[0]?.fields || [];
-const ignField = parts.find(f => f.name.toLowerCase() === "ign");
-const resolvedIGN = ignField?.value || ign;
+    const parts = interaction.message.embeds[0]?.fields || [];
+    const ignField = parts.find((f) => f.name.toLowerCase() === "ign");
+    const resolvedIGN = ignField?.value || ign;
 
-const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
+    const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
     const promotedBy = interaction.user.tag;
 
-await interaction.update({
-  embeds: [
-    new EmbedBuilder()
-      .setColor(0x2ecc71)
-      .setDescription(
-        `✅ Application handled by **${promotedBy}.\n\n**IGN:** ${resolvedIGN}\n**User:** <@${userId}>\n**Promoted:** ${timestamp}`
-      )
-  ],
-  components: []
-});
+    await interaction.update({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(0x2ecc71)
+          .setDescription(
+            `✅ Application handled by **${promotedBy}.\n\n**IGN:** ${resolvedIGN}\n**User:** <@${userId}>\n**Promoted:** ${timestamp}`,
+          ),
+      ],
+      components: [],
+    });
   }
   // Officer clicks Copy IGN
-if (interaction.customId.startsWith("copy_")) {
-  const parts = interaction.customId.split("_");
-  const ign = decodeURIComponent(parts.slice(2).join("_")); // handles underscores
+  if (interaction.customId.startsWith("copy_")) {
+    const parts = interaction.customId.split("_");
+    const ign = decodeURIComponent(parts.slice(2).join("_")); // handles underscores
 
-  await interaction.reply({
-    content: `👍🏻 Copy IGN below:\n\`\`\`\n${ign}\n\`\`\``,
-    flags: EPHEMERAL
-  });
-  return;
-}
+    await interaction.reply({
+      content: `👍🏻 Copy IGN below:\n\`\`\`\n${ign}\n\`\`\``,
+      flags: EPHEMERAL,
+    });
+    return;
+  }
 });
 
 client.login(process.env.DISCORD_TOKEN);
-
