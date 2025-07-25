@@ -16,7 +16,7 @@ client.once(Events.ClientReady, async () => {
   await applyChannel.send({
     content: "Ready to join the guild?",
     components: [
-      new ActionRowBuilder().addComponents(
+     new ActionRowBuilder().addComponents(
         new ButtonBuilder()
           .setCustomId("apply_now")
           .setLabel("📩 Apply to Join")
@@ -110,10 +110,24 @@ const actionRow = new ActionRowBuilder().addComponents(
     await user.roles.remove(process.env.APPLICANT_ROLE_ID);
     await user.roles.add(process.env.MEMBER_ROLE_ID);
 
-    await interaction.update({
-      content: `✅ **Promoted by ${interaction.user.tag}**`,
-      components: []
-    });
+    const ign = "UNKNOWN"; // fallback
+const parts = interaction.message.embeds[0]?.fields || [];
+const ignField = parts.find(f => f.name.toLowerCase() === "ign");
+const resolvedIGN = ignField?.value || ign;
+
+const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
+    const promotedBy = interaction.user.tag;
+
+await interaction.update({
+  embeds: [
+    new EmbedBuilder()
+      .setColor(0x2ecc71)
+      .setDescription(
+        `✅ Application handled by **${promotedBy}.\n\n**IGN:** ${resolvedIGN}\n**User:** <@${userId}>\n**Promoted:** ${timestamp}`
+      )
+  ],
+  components: []
+});
   }
   // Officer clicks Copy IGN
 if (interaction.customId.startsWith("copy_")) {
@@ -122,7 +136,7 @@ if (interaction.customId.startsWith("copy_")) {
 
   await interaction.reply({
     content: `👍🏻 Copy IGN below:\n\`\`\`\n${ign}\n\`\`\``,
-    flags: 1 << 6
+    flags: EPHEMERAL
   });
   return;
 }
