@@ -122,14 +122,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch {
       await interaction.reply({
         content: "✅ Application received! Officers will reach out soon.",
-        ephemeral: true,
+        flags: EPHEMERAL,
       });
     }
 
     if (!interaction.replied)
       await interaction.reply({
         content: "✅ Application submitted!",
-        ephemeral: true,
+        flags: EPHEMERAL,
       });
   }
 
@@ -155,7 +155,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         new EmbedBuilder()
           .setColor(0x2ecc71)
           .setDescription(
-            `✅ Application handled by **${promotedBy}.\n\n**IGN:** ${resolvedIGN}\n**User:** <@${userId}>\n**Promoted:** ${timestamp}`,
+            `✅ Application handled by **${promotedBy}.\n\n**IGN:** ${resolvedIGN}\n**User:** <@${userId}>\n**Promoted: ${timestamp}`,
           ),
       ],
       components: [],
