@@ -1,5 +1,7 @@
 const { buildApplicationModal } = require("./modals/applicationModal");
 const messages = require("./messages/userMessages")
+const { promoteUser } = require("./promoteUser");
+
 require("dotenv-flow").config();
 
 const {
@@ -104,7 +106,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         { name: "Discord User", value: interaction.user.tag },
         { name: "Time", value: timestamp },
       )
-      .setColor(0x00ae86)
+      .setColor(0xe57373)
       .setFooter({ text: `User ID: ${interaction.user.id}` });
 
     const actionRow = new ActionRowBuilder().addComponents(
@@ -149,63 +151,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   // Officer promotes
   if (interaction.isButton() && interaction.customId.startsWith("promote_")) {
-    const userId = interaction.customId.split("_")[1];
-    const guild = interaction.guild;
-    const user = await guild.members.fetch(userId);
-
-    await user.roles.remove(process.env.APPLICANT_ROLE_ID);
-    await user.roles.add(process.env.MEMBER_ROLE_ID);
-
-    const ign = "UNKNOWN"; // fallback
-    const parts = interaction.message.embeds[0]?.fields || [];
-    const ignField = parts.find((f) => f.name.toLowerCase() === "ign");
-    const resolvedIGN = ignField?.value || ign;
-
-    const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
-    const promotedBy = interaction.user.tag;
-
-    //try {
-    //  await interaction.user.send(
-    //    `📩 DM test: You clicked promote for **${user.user.tag}**`,
-    //  );
-    //} catch (err) {
-    //  console.warn(`❌ Couldn't DM user ${user.user.tag}`);
-    //}
-
-    try {
-      await interaction.user.send(messages.officerConfirm(user.user.tag));
-    } catch (err) {
-      console.warn(`❌ Couldn't DM user ${user.user.tag}`);
-    }
-
-    try {
-      await user.send(
-        `🎉 Congratulations ${user.user.tag}! You've been promoted to member status!`,
-      );
-    } catch (err) {
-      console.warn(`❌ Couldn't DM user ${user.user.tag}`);
-    }
-
-    console.log("Bot role position:", interaction.guild.members.me.roles.highest.position);
-    console.log("Target user role position:", user.roles.highest.position);
-
-    try {
-      await user.setNickname(resolvedIGN);
-      console.log('✅ Nickname set successfully');
-    } catch (err) {
-      console.error(`❌ Failed to set nickname for ${user.user.tag}:`, err);
-    }
-
-    await interaction.update({
-      embeds: [
-        new EmbedBuilder()
-          .setColor(0x2ecc71)
-          .setDescription(
-            `✅ Application handled by **${promotedBy}.\n\n**IGN:** ${resolvedIGN}\n**User:** <@${userId}>\n**Promoted: ${timestamp}`,
-          ),
-      ],
-      components: [],
-    });
+    await promoteUser(interaction);
   }
   // Officer clicks Copy IGN
   if (interaction.customId.startsWith("copy_")) {
