@@ -82,19 +82,6 @@ client.once(Events.ClientReady, async () => {
   }
 });
 
-  //await applyChannel.send({
-  //  content: "Ready to join the guild?",
-  //  components: [
-  //    new ActionRowBuilder().addComponents(
-  //      new ButtonBuilder()
-  //        .setCustomId("apply_now")
-  //        .setLabel("📩 Apply to Join")
-  //        .setStyle(ButtonStyle.Primary),
-  //    ),
-  //  ],
-  //});
-  //
-
 client.on(Events.InteractionCreate, async (interaction) => {
   // Apply button click
   if (interaction.isButton() && interaction.customId === "apply_now") {
