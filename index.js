@@ -55,7 +55,7 @@ client.once(Events.ClientReady, async () => {
     console.log("💻 Running in local mode");
   };
 
-  const applyChannel = await client.channels.fetch(process.env.APPLICATION_CHANNEL_ID);
+  const applyChannel = await client.channels.fetch(proceset.env.APPLICATION_CHANNEL_ID);
   const messages = await applyChannel.messages.fetch({ limit: 10 });
 
   const existing = messages.find(
@@ -107,6 +107,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     interaction.customId === "submit_application"
   ) {
     const ign = interaction.fields.getTextInputValue("ign").trim();
+    // IGN must be 2-32 alphanumeric characters followed by a period and 4 digits
     const ignRegex = /^[a-zA-Z0-9]{2,32}\.\d{4}$/;
 
     if (!ignRegex.test(ign)) {
@@ -160,7 +161,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
       await member.send(
         "✅ Your application has been submitted! Officers will be in touch.",
       );
-    } catch {
+    } catch (err) {
+      console.error("DM error:", err);
       await interaction.reply({
         content: "✅ Application received! Officers will reach out soon.",
         flags: EPHEMERAL,
