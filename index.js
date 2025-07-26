@@ -39,7 +39,7 @@ client.once(Events.ClientReady, async () => {
     console.log("💻 Running in local mode");
   };
 
-  const applyChannel = await client.channels.fetch("1398407440302735471");
+  const applyChannel = await client.channels.fetch("APPLICATION_CHANNEL_ID");
 
   await applyChannel.send({
     content: "Ready to join the guild?",
