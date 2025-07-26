@@ -1,10 +1,21 @@
 const fs = require("fs");
 const path = require("path");
 
-function readConfig() {
-  const env = process.env.NODE_ENV || "local";
-  const configPath = path.join(__dirname, `../config/${env}.json`);
+function readEnvMap() {
+  const raw = fs.readFileSync(path.join(__dirname, "../config/environments.json"), "utf-8");
+  return JSON.parse(raw);
+}
 
+function getConfigForGuild(guildId) {
+  const envMap = readEnvMap();
+  const env = envMap[guildId];
+
+  if (!env) {
+    console.warn(`⚠️ No config mapped for guild ID: ${guildId}`);
+    return {};
+  }
+
+  const configPath = path.join(__dirname, `../config/${env}.json`);
   try {
     const raw = fs.readFileSync(configPath, "utf-8");
     return JSON.parse(raw);
@@ -14,5 +25,4 @@ function readConfig() {
   }
 }
 
-module.exports = { readConfig };
-
+module.exports = { getConfigForGuild };
