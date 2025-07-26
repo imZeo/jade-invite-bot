@@ -78,7 +78,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
       });
     }
 
-    const member = await interaction.guild.members.fetch(client.user.id);
+    const member = await interaction.guild.members.fetch(interaction.user.id);
+    //const member = await interaction.guild.members.fetch(client.user.id);
     const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
 
     const officerChannel = await client.channels.fetch(
@@ -88,20 +89,20 @@ client.on(Events.InteractionCreate, async (interaction) => {
       .setTitle("📝 New Guild Application")
       .addFields(
         { name: "IGN", value: ign },
-        { name: "Discord User", value: member.user.tag },
+        { name: "Discord User", value: interaction.user.tag },
         { name: "Time", value: timestamp },
       )
       .setColor(0x00ae86)
-      .setFooter({ text: `User ID: ${member.id}` });
+      .setFooter({ text: `User ID: ${interaction.user.id}` });
 
     const actionRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId(`copy_${member.id}_${encodeURIComponent(ign)}`)
+        .setCustomId(`copy_${interaction.user.id}_${encodeURIComponent(ign)}`)
         .setLabel("📋 Copy IGN")
         .setStyle(ButtonStyle.Secondary),
 
       new ButtonBuilder()
-        .setCustomId(`promote_${member.id}`)
+        .setCustomId(`promote_${interaction.user.id}`)
         .setLabel("✅ Promote")
         .setStyle(ButtonStyle.Success),
     );
@@ -138,7 +139,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.isButton() && interaction.customId.startsWith("promote_")) {
     const userId = interaction.customId.split("_")[1];
     const guild = interaction.guild;
-    const user = await guild.members.fetch(client.user.id);
+    const user = await guild.members.fetch(userId);
 
     await user.roles.remove(process.env.APPLICANT_ROLE_ID);
     await user.roles.add(process.env.MEMBER_ROLE_ID);
@@ -172,6 +173,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch (err) {
       console.warn(`❌ Couldn't DM user ${user.user.tag}`);
     }
+
+    console.log("Bot role position:", interaction.guild.members.me.roles.highest.position);
+    console.log("Target user role position:", user.roles.highest.position);
 
     try {
       await user.setNickname(resolvedIGN);
