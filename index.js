@@ -13,6 +13,8 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 
+const port = process.env.PORT || 4000:
+
 const EPHEMERAL = 1 << 6;
 
 const client = new Client({
