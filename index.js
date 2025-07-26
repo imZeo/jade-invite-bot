@@ -56,19 +56,44 @@ client.once(Events.ClientReady, async () => {
   };
 
   const applyChannel = await client.channels.fetch(process.env.APPLICATION_CHANNEL_ID);
+  const messages = await applyChannel.messages.fetch({ limit: 10 });
 
-  await applyChannel.send({
-    content: "Ready to join the guild?",
-    components: [
-      new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId("apply_now")
-          .setLabel("📩 Apply to Join")
-          .setStyle(ButtonStyle.Primary),
-      ),
-    ],
-  });
+  const existing = messages.find(
+    (msg) =>
+      msg.author.id === client.user.id &&
+      msg.content.includes("Ready to join the guild?")
+  );
+
+  if (!existing) {
+    console.log("🔄 Sending application message");
+    await applyChannel.send({
+      content: "Ready to join the guild?",
+      components: [
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId("apply_now")
+            .setLabel("📩 Apply to Join")
+            .setStyle(ButtonStyle.Primary),
+        ),
+      ],
+    });
+  } else {
+    console.log("✅ Application message already exists, skipping send");
+  }
 });
+
+  //await applyChannel.send({
+  //  content: "Ready to join the guild?",
+  //  components: [
+  //    new ActionRowBuilder().addComponents(
+  //      new ButtonBuilder()
+  //        .setCustomId("apply_now")
+  //        .setLabel("📩 Apply to Join")
+  //        .setStyle(ButtonStyle.Primary),
+  //    ),
+  //  ],
+  //});
+  //
 
 client.on(Events.InteractionCreate, async (interaction) => {
   // Apply button click
