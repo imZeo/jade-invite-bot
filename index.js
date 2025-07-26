@@ -55,7 +55,7 @@ client.once(Events.ClientReady, async () => {
     console.log("💻 Running in local mode");
   };
 
-  const applyChannel = await client.channels.fetch(proceset.env.APPLICATION_CHANNEL_ID);
+  const applyChannel = await client.channels.fetch(process.env.APPLICATION_CHANNEL_ID);
   const messages = await applyChannel.messages.fetch({ limit: 10 });
 
   const existing = messages.find(

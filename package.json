@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node index.js",
     "start:staging": "NODE_ENV=staging node index.js",
-    "start:prod": "NODE_ENV=prod node index.js"
+    "start:prod": "NODE_ENV=prod node index.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,8 @@
     "dotenv": "^17.2.1",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.5"
   }
 }
