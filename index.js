@@ -16,17 +16,18 @@ const {
   EmbedBuilder,
 } = require("discord.js");
 
-const express = require('express')
-const app = express()
-const port = process.env.PORT || 4000
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 4000;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+app.get('/', (_, res) => {
+  res.send('👋 Guild Recruiter Bot is running');
+});
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`🌐 Dummy web server running on port ${port}`);
+});
+
 
 // hi mom!
 
