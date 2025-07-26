@@ -1,4 +1,5 @@
-require("dotenv").config();
+require("dotenv-flow").config();
+
 const {
   Client,
   GatewayIntentBits,
@@ -30,6 +31,13 @@ const client = new Client({
 
 client.once(Events.ClientReady, async () => {
   console.log(`🤖 Logged in as ${client.user.tag}`);
+  if (process.env.NODE_ENV === "staging") {
+    console.log("🚧 Running in dev mode");
+  } else if (process.env.NODE_ENV === "production") {
+    console.log("✅ Running in production");
+  } else {
+    console.log("💻 Running in local mode");
+  };
 
   const applyChannel = await client.channels.fetch("1398407440302735471");
 
@@ -158,8 +166,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
       //  "🎉 You've been promoted to **Member**! Welcome to the guild — we’re glad to have you.",
       //);
       // Send DM to the officer who clicked promote (testing purposes)
-      await interaction.user.send(`📩 DM test: You clicked promote for **${user.user.tag}**`);
-
+      await interaction.user.send(
+        `📩 DM test: You clicked promote for **${user.user.tag}**`,
+      );
     } catch (err) {
       console.warn(`❌ Couldn't DM user ${user.user.tag}`);
     }

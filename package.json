@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "start:staging": "NODE_ENV=staging node index.js",
+    "start:prod": "NODE_ENV=prod node index.js"
   },
   "keywords": [],
   "author": "",
@@ -11,9 +13,7 @@
   "description": "",
   "dependencies": {
     "discord.js": "^14.21.0",
-    "dotenv": "^17.2.1"
-  },
-  "scripts": {
-    "start": "node index.js"
+    "dotenv": "^17.2.1",
+    "dotenv-flow": "^4.1.0"
   }
 }
