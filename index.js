@@ -14,6 +14,7 @@ const {
 } = require("discord.js");
 
 const port = process.env.PORT || 4000;
+// hi mom!
 
 const EPHEMERAL = 1 << 6;
 
