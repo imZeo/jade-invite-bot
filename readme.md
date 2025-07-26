@@ -23,10 +23,14 @@ A lightweight Discord bot for handling guild applications with minimal friction.
 
 ## 🛠 Setup
 
+### 0. Create a Discord Bot
+Follow the official guide to create a bot and get your token:  
+👉 [Discord Developer Portal – Creating a Bot](https://discord.com/developers/docs/getting-started)
+
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/your-username/guild-recruiter-bot.git
+gh repo clone imZeo/jade-invite-bot
 cd guild-recruiter-bot
 ```
 
