@@ -1,4 +1,5 @@
 const { buildApplicationModal } = require("./modals/applicationModal");
+const messages = require("./messages/userMessages")
 require("dotenv-flow").config();
 
 const {
@@ -150,10 +151,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
     const promotedBy = interaction.user.tag;
 
+    //try {
+    //  await interaction.user.send(
+    //    `📩 DM test: You clicked promote for **${user.user.tag}**`,
+    //  );
+    //} catch (err) {
+    //  console.warn(`❌ Couldn't DM user ${user.user.tag}`);
+    //}
+
     try {
-      await interaction.user.send(
-        `📩 DM test: You clicked promote for **${user.user.tag}**`,
-      );
+      await interaction.user.send(messages.officerConfirm(user.user.tag));
     } catch (err) {
       console.warn(`❌ Couldn't DM user ${user.user.tag}`);
     }
