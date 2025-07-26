@@ -7,7 +7,7 @@ A lightweight Discord bot for handling guild applications with minimal friction.
 ## ✨ Features
 
 - ✅ "Apply to Join" button in a public channel
-- 📝 Modal asks for a single field: IGN (e.g., `zeo.1026`)
+- 📝 Modal asks for a single field (with validation): IGN (e.g., `zeo.1026`)
 - 🔒 Application is sent to a private officer channel with:
   - Discord username
   - Submitted IGN
@@ -74,16 +74,15 @@ NODE_ENV=production npm start
 
 - ✅ Move accepted applications to a separate thread
 - ❌ Reject button with custom message
-- 📜 Application logs or audit trail
 
 ---
 
 ## 🐛 Issues
 
-If you hit a bug or want a new feature, feel free to open an issue or submit a pull request.
+If you hit a bug or want a new feature, feel free to open an issue or submit a pull request. 
 
 ---
 
 ## 📜 License
 
-MIT – do whatever, but be cool.
+Unilicense. Do whatever you want with it, no strings attached.
