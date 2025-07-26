@@ -1,3 +1,4 @@
+const { buildApplicationModal } = require("./modals/applicationModal");
 require("dotenv-flow").config();
 
 const {
@@ -39,7 +40,7 @@ client.once(Events.ClientReady, async () => {
     console.log("💻 Running in local mode");
   };
 
-  const applyChannel = await client.channels.fetch("APPLICATION_CHANNEL_ID");
+  const applyChannel = await client.channels.fetch(process.env.APPLICATION_CHANNEL_ID);
 
   await applyChannel.send({
     content: "Ready to join the guild?",
@@ -57,19 +58,7 @@ client.once(Events.ClientReady, async () => {
 client.on(Events.InteractionCreate, async (interaction) => {
   // Apply button click
   if (interaction.isButton() && interaction.customId === "apply_now") {
-    const modal = new ModalBuilder()
-      .setCustomId("submit_application")
-      .setTitle("Guild Application")
-      .addComponents(
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId("ign")
-            .setLabel("Enter your in-game name (e.g., zeo.1026)")
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true),
-        ),
-      );
-    await interaction.showModal(modal);
+    await interaction.showModal(buildApplicationModal());
   }
 
   // Modal submission
@@ -162,12 +151,16 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const promotedBy = interaction.user.tag;
 
     try {
-      //await interaction.user.send(
-      //  "🎉 You've been promoted to **Member**! Welcome to the guild — we’re glad to have you.",
-      //);
-      // Send DM to the officer who clicked promote (testing purposes)
       await interaction.user.send(
         `📩 DM test: You clicked promote for **${user.user.tag}**`,
+      );
+    } catch (err) {
+      console.warn(`❌ Couldn't DM user ${user.user.tag}`);
+    }
+
+    try {
+      await user.send(
+        `🎉 Congratulations ${user.user.tag}! You've been promoted to member status!`,
       );
     } catch (err) {
       console.warn(`❌ Couldn't DM user ${user.user.tag}`);
