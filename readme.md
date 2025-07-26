@@ -44,10 +44,9 @@ GUILD_ID=your-guild-id
 APPLICANT_ROLE_ID=role-id-for-applicant
 MEMBER_ROLE_ID=role-id-for-member
 OFFICER_CHANNEL_ID=channel-id-for-officer-apps
+APPLICATION_CHANNEL_ID=channel-id-for-public-applications
 NODE_ENV=development
 ```
-
-> ⚠️ Never commit `.env` to version control — add it to your `.gitignore`.
 
 ### 4. Start the bot
 
@@ -73,11 +72,9 @@ NODE_ENV=production npm start
 
 ## 🧼 Future Ideas
 
+- ✅ Move accepted applications to a separate thread
 - ❌ Reject button with custom message
-- ⏳ Waitlist or hold status
 - 📜 Application logs or audit trail
-- 🌍 Web dashboard for reviewing apps
-- 🧵 Auto-create threads per application for officer discussion
 
 ---
 
