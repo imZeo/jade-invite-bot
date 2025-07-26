@@ -152,6 +152,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
     const promotedBy = interaction.user.tag;
 
+    try {
+      await user.send(
+        "🎉 You've been promoted to **Member**! Welcome to the guild — we’re glad to have you.",
+      );
+    } catch (err) {
+      console.warn(`❌ Couldn't DM user ${user.user.tag}`);
+    }
+
     await interaction.update({
       embeds: [
         new EmbedBuilder()
