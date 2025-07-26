@@ -154,9 +154,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const promotedBy = interaction.user.tag;
 
     try {
-      await user.send(
-        "🎉 You've been promoted to **Member**! Welcome to the guild — we’re glad to have you.",
-      );
+      //await interaction.user.send(
+      //  "🎉 You've been promoted to **Member**! Welcome to the guild — we’re glad to have you.",
+      //);
+      // Send DM to the officer who clicked promote (testing purposes)
+      await interaction.user.send(`📩 DM test: You clicked promote for **${user.user.tag}**`);
+
     } catch (err) {
       console.warn(`❌ Couldn't DM user ${user.user.tag}`);
     }
