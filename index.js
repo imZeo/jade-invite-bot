@@ -166,6 +166,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.warn(`❌ Couldn't DM user ${user.user.tag}`);
     }
 
+    try {
+      await user.setNickname(resolvedIGN);
+      console.log('✅ Nickname set successfully');
+    } catch (err) {
+      console.error(`❌ Failed to set nickname for ${user.user.tag}:`, err);
+    }
+
     await interaction.update({
       embeds: [
         new EmbedBuilder()
