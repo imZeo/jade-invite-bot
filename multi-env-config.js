@@ -26,6 +26,7 @@ function loadConfig(guildId) {
     const envConfig = JSON.parse(fs.readFileSync(envConfigPath, "utf8"));
 
     console.log(`✅ Found environment: ${envName}`);
+    console.log(`📄 Loaded from: ${path.relative(process.cwd(), envConfigPath)}`);
     console.log("🔧 Loaded config:", envConfig);
 
     configCache[guildId] = envConfig;
