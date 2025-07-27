@@ -1,6 +1,7 @@
 const { buildApplicationModal } = require("./modals/applicationModal");
-const messages = require("./messages/userMessages")
+const messages = require("./messages/userMessages");
 const { promoteUser } = require("./promoteUser");
+const { loadConfig } = require("./multi-env-config");
 
 require("dotenv-flow").config();
 
@@ -55,7 +56,15 @@ client.once(Events.ClientReady, async () => {
     console.log("💻 Running in local mode");
   };
 
-  const applyChannel = await client.channels.fetch(process.env.APPLICATION_CHANNEL_ID);
+  const firstGuild = client.guilds.cache.first();
+  if (!firstGuild) {
+    console.error("❌ No guilds found! Make sure the bot is in at least one server.");
+    return;
+  }
+
+  const config = await loadConfig(firstGuild.id);
+
+  const applyChannel = await client.channels.fetch(config.applicationChannelId);
   const messages = await applyChannel.messages.fetch({ limit: 10 });
 
   const existing = messages.find(
@@ -83,6 +92,10 @@ client.once(Events.ClientReady, async () => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
+
+  const guild = interaction.guildId;
+  const config = await loadConfig(guild);
+
   // Apply button click
   if (interaction.isButton() && interaction.customId === "apply_now") {
     await interaction.showModal(buildApplicationModal());
@@ -110,7 +123,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
 
     const officerChannel = await client.channels.fetch(
-      process.env.OFFICER_CHANNEL_ID,
+      config.officerChannelId,
     );
     const embed = new EmbedBuilder()
       .setTitle("📝 New Guild Application")
@@ -138,7 +151,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     // Assign applicant role
     try {
-      await member.roles.add(process.env.APPLICANT_ROLE_ID);
+      await member.roles.add(config.applicantRoleId);
     } catch (err) {
       console.error("Role add error:", err);
     }
