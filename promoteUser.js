@@ -1,13 +1,16 @@
 const { EmbedBuilder } = require("discord.js");
 const messages = require("./messages/userMessages");
+const { loadConfig } = require("./multi-env-config");
 
 async function promoteUser(interaction) {
   const userId = interaction.customId.split("_")[1];
   const guild = interaction.guild;
   const user = await guild.members.fetch(userId);
 
-  await user.roles.remove(process.env.APPLICANT_ROLE_ID);
-  await user.roles.add(process.env.MEMBER_ROLE_ID);
+  const config = loadConfig(guild.id);
+
+  await user.roles.remove(config.applicantRoleId);
+  await user.roles.add(config.memberRoleId);
 
   const embedFields = interaction.message.embeds[0]?.fields || [];
   const ignField = embedFields.find((f) => f.name.toLowerCase() === "ign");
