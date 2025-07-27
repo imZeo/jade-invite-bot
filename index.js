@@ -64,7 +64,7 @@ client.once(Events.ClientReady, async () => {
 
   const config = await loadConfig(firstGuild.id);
 
-  const applyChannel = await client.channels.fetch(config.applyChannelId);
+  const applyChannel = await client.channels.fetch(config.applicationChannelId);
   const messages = await applyChannel.messages.fetch({ limit: 10 });
 
   const existing = messages.find(
