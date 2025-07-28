@@ -48,46 +48,48 @@ const client = new Client({
 
 client.once(Events.ClientReady, async () => {
   console.log(`🤖 Logged in as ${client.user.tag}`);
-  if (process.env.NODE_ENV === "staging") {
-    console.log("🚧 Running in dev mode");
-  } else if (process.env.NODE_ENV === "production") {
-    console.log("✅ Running in production");
-  } else {
-    console.log("💻 Running in local mode");
-  };
 
-  const firstGuild = client.guilds.cache.first();
-  if (!firstGuild) {
+  const guilds = client.guilds.cache;
+
+  if (!guilds.size) {
     console.error("❌ No guilds found! Make sure the bot is in at least one server.");
     return;
   }
 
-  const config = await loadConfig(firstGuild.id);
+  for (const [guildId, guild] of guilds) {
+    const config = loadConfig(guildId);
+    console.log(`🔁 Initialized for guild: ${guild.name} (${guildId})`);
 
-  const applyChannel = await client.channels.fetch(config.applicationChannelId);
-  const messages = await applyChannel.messages.fetch({ limit: 10 });
+    try {
+      const channel = await client.channels.fetch(config.applicationChannelId);
+      const messages = await channel.messages.fetch({ limit: 10 });
 
-  const existing = messages.find(
-    (msg) =>
-      msg.author.id === client.user.id &&
-      msg.content.includes("Ready to join the guild?")
-  );
+      const existing = messages.find(
+        (msg) =>
+          msg.author.id === client.user.id &&
+          msg.content.includes("Ready to join the guild?")
+      );
 
-  if (!existing) {
-    console.log("🔄 Sending application message");
-    await applyChannel.send({
-      content: "Ready to join the guild?",
-      components: [
-        new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("apply_now")
-            .setLabel("📩 Apply to Join")
-            .setStyle(ButtonStyle.Primary),
-        ),
-      ],
-    });
-  } else {
-    console.log("✅ Application message already exists, skipping send");
+      if (!existing) {
+        console.log(`📨 Sending application message in ${guild.name}`);
+        await channel.send({
+          content: "Ready to join the guild?",
+          components: [
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId("apply_now")
+                .setLabel("📩 Apply to Join")
+                .setStyle(ButtonStyle.Primary),
+            ),
+          ],
+        });
+      } else {
+        console.log(`✅ Application message already exists in ${guild.name}`);
+      }
+
+    } catch (err) {
+      console.warn(`⚠️ Could not set up application message in ${guild.name}:`, err.message);
+    }
   }
 });
 
@@ -98,8 +100,22 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   // Apply button click
   if (interaction.isButton() && interaction.customId === "apply_now") {
+  try {
     await interaction.showModal(buildApplicationModal());
+  } catch (err) {
+    console.error("❌ Error showing modal:", err);
+    if (err.code === 10062) { // Interaction expired or already handled
+      try {
+        await interaction.reply({
+          content: "❌ Interaction timed out. Please try again.",
+          flags: EPHEMERAL,
+        });
+      } catch (replyErr) {
+        console.warn("⚠️ Could not reply to expired interaction:", replyErr.message);
+      }
+    }
   }
+}
 
   // Modal submission
   if (
