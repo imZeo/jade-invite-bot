@@ -36,7 +36,7 @@ async function promoteUser(interaction) {
 
   try {
     await user.setNickname(resolvedIGN);
-    console.log("✅ Nickname set successfully");
+    console.log("✅ Nickname set successfully to:", resolvedIGN);
   } catch (err) {
     console.error(`❌ Failed to set nickname for ${user.user.tag}:`, err);
   }
