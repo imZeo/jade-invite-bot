@@ -1,17 +1,22 @@
 const { EmbedBuilder } = require("discord.js");
 const messages = require("./messages/userMessages");
-const { loadConfig } = require("./multi-env-config");
 
 async function promoteUser(interaction) {
   const userId = interaction.customId.split("_")[1];
   const guild = interaction.guild;
-  const user = await guild.members.fetch(userId);
+  const user = await guild.members.fetch(userId)
 
-  const config = loadConfig(guild.id);
+  // Get role IDs from environment variables
+  const applicantRoleId = process.env.APPLICANT_ROLE_ID;
+  const memberRoleId = process.env.MEMBER_ROLE_ID;
 
-  await user.roles.remove(config.applicantRoleId);
-  await user.roles.add(config.memberRoleId);
-
+  try {
+    await user.roles.remove(applicantRoleId);
+    await user.roles.add(memberRoleId);
+  } catch (err) {
+    console.error("❌ Role assignment failed:", err);
+  }
+  
   const embedFields = interaction.message.embeds[0]?.fields || [];
   const ignField = embedFields.find((f) => f.name.toLowerCase() === "ign");
   const resolvedIGN = ignField?.value || "UNKNOWN";
@@ -41,16 +46,20 @@ async function promoteUser(interaction) {
     console.error(`❌ Failed to set nickname for ${user.user.tag}:`, err);
   }
 
-  await interaction.update({
-    embeds: [
-      new EmbedBuilder()
-        .setColor(0x81c784)
-        .setDescription(
-          `✅ Application handled by **${promotedBy}**.\n\n**IGN:** ${resolvedIGN}\n**User:** <@${userId}>\n**Promoted:** ${timestamp}`
-        ),
-    ],
-    components: [],
-  });
+  try {
+    await interaction.update({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(0x81c784)
+          .setDescription(
+            `✅ Application handled by **${promotedBy}**.\n\n**IGN:** ${resolvedIGN}\n**User:** <@${userId}>\n**Promoted:** ${timestamp}`
+          ),
+      ],
+      components: [],
+    });
+  } catch (err) {
+    console.error("❌ Failed to update interaction message:", err);
+  }
 }
 
 module.exports = { promoteUser };

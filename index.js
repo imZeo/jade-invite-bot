@@ -179,7 +179,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     } catch (err) {
       console.error("DM error:", err);
       await interaction.reply({
-        content: "✅ Application received! Officers will reach out soon."
+        content: "✅ Application received! Officers will reach out soon.",
         flags: EPHEMERAL,
       });
     }
