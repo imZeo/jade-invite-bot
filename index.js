@@ -1,7 +1,6 @@
 const { buildApplicationModal } = require("./modals/applicationModal");
 const messages = require("./messages/userMessages");
 const { promoteUser } = require("./promoteUser");
-const { loadConfig } = require("./multi-env-config");
 
 require("dotenv-flow").config();
 
@@ -36,6 +35,13 @@ app.listen(port, () => {
 
 const EPHEMERAL = 1 << 6;
 
+const config = {
+  applicationChannelId: process.env.APPLICATION_CHANNEL_ID,
+  officerChannelId: process.env.OFFICER_CHANNEL_ID,
+  applicantRoleId: process.env.APPLICANT_ROLE_ID,
+  memberRoleId: process.env.MEMBER_ROLE_ID,
+};
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -57,7 +63,6 @@ client.once(Events.ClientReady, async () => {
   }
 
   for (const [guildId, guild] of guilds) {
-    const config = loadConfig(guildId);
     console.log(`🔁 Initialized for guild: ${guild.name} (${guildId})`);
 
     try {
@@ -94,9 +99,6 @@ client.once(Events.ClientReady, async () => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-
-  const guild = interaction.guildId;
-  const config = await loadConfig(guild);
 
   // Apply button click
   if (interaction.isButton() && interaction.customId === "apply_now") {
@@ -135,12 +137,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     const member = await interaction.guild.members.fetch(interaction.user.id);
-    //const member = await interaction.guild.members.fetch(client.user.id);
     const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
 
-    const officerChannel = await client.channels.fetch(
-      config.officerChannelId,
-    );
+    const officerChannel = await client.channels.fetch(config.officerChannelId);
     const embed = new EmbedBuilder()
       .setTitle("📝 New Guild Application")
       .addFields(
@@ -175,12 +174,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     // DM fallback
     try {
       await member.send(
-        "✅ Your application has been submitted! Officers will be in touch.",
+        "✅ Your application has been submitted! Officers will be in touch."
       );
     } catch (err) {
       console.error("DM error:", err);
       await interaction.reply({
-        content: "✅ Application received! Officers will reach out soon.",
+        content: "✅ Application received! Officers will reach out soon."
         flags: EPHEMERAL,
       });
     }
