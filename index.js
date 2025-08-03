@@ -132,8 +132,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
     if (!ignRegex.test(ign)) {
       return await interaction.reply({
-        content:
-          "❌ Invalid IGN format.\nPlease click **Apply** again and enter a valid IGN like `zeo.1234`.\n Your account name is visible on the character select screen in-game. Make sure to include the period and 4-digit number at the end.\n\nExample: `zeo.1234`",
+        content: messages.wrongIGNFormat(),
         flags: EPHEMERAL,
       });
     }
@@ -176,12 +175,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     // DM fallback
     try {
       await member.send(
-        "✅ Your application has been submitted! Officers will be in touch."
+        messages.applicationReceived()
       );
     } catch (err) {
       console.error("DM error:", err);
       await interaction.reply({
-        content: "✅ Application received! Officers will reach out soon.",
+        content: messages.applicationReceived(),
         flags: EPHEMERAL,
       });
     }
