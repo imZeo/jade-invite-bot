@@ -124,7 +124,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
     interaction.isModalSubmit() &&
     interaction.customId === "submit_application"
   ) {
-    const ign = interaction.fields.getTextInputValue("ign").trim();
     // IGN must be 2-32 alphanumeric characters followed by a period and 4 digits
 
     const rawInput = interaction.fields.getTextInputValue("ign").trim();
