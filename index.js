@@ -126,7 +126,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
   ) {
     const ign = interaction.fields.getTextInputValue("ign").trim();
     // IGN must be 2-32 alphanumeric characters followed by a period and 4 digits
-    const ignRegex = /^[a-zA-Z0-9]{2,32}\.\d{4}$/;
+
+    const rawInput = interaction.fields.getTextInputValue("ign").trim();
+    const ign = rawInput.replace(/\s+/g, " ");
+    const ignRegex = /^[a-zA-Z0-9](?:[a-zA-Z0-9 ]{0,30}[a-zA-Z0-9])?\.\d{4}$/;
 
     if (!ignRegex.test(ign)) {
       return await interaction.reply({
