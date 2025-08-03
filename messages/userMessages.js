@@ -3,7 +3,7 @@ function applicationReceived() {
 }
 
 function promotedNotice() {
-  return `🎉 You've been promoted to **Member**! Welcome to the guild — we’re super happy to have you :heart: Two more things for you to do:\n\n1. In Guild Wars 2, open your Guild windows (default G) and accept the invite\n2. Head over to Channels and Roles to select what contents interest you the most`; 
+  return `🎉 You've been promoted to **Member**! Welcome to the guild — we’re super happy to have you :heart: Two more things for you to do:\n\n1. In Guild Wars 2, open your Guild windows (default G) and accept the invite\n2. Head over to [Channels & Roles](https://discord.com/channels/133189975641554944/customize-community) to select what contents interest you the most`; 
 }
 
 function officerConfirm(userTag) {
