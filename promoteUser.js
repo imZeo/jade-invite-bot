@@ -24,26 +24,27 @@ async function promoteUser(interaction) {
   const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
   const promotedBy = interaction.user.tag;
 
-  try {
-    await interaction.user.send(messages.officerConfirm(user.user.tag));
-  } catch (err) {
-    console.warn(`❌ Couldn't DM user ${user.user.tag}`);
+  async function safeDMHelper(user, message) {
+    try {
+      await user.send(message);
+    } catch (err) {
+      console.warn(`❌ Couldn't DM user ${user.user.tag}`);
+    }
   }
 
-  try {
-    await user.send(`🎉 Congratulations ${user.user.tag}! You've been promoted to member status!`);
-  } catch (err) {
-    console.warn(`❌ Couldn't DM user ${user.user.tag}`);
-  }
+  await safeDMHelper(interaction.user, messages.officerConfirm(user.user.tag));
+  await safeDMHelper(user, messages.promotedNotice());
 
   console.log("Bot role position:", interaction.guild.members.me.roles.highest.position);
   console.log("Target user role position:", user.roles.highest.position);
 
-  try {
-    await user.setNickname(resolvedIGN);
-    console.log("✅ Nickname set successfully to:", resolvedIGN);
-  } catch (err) {
-    console.error(`❌ Failed to set nickname for ${user.user.tag}:`, err);
+  if (interaction.guild.members.me.roles.highest.position > user.roles.highest.position) {
+    console.log("✅ Bot has permission to set nickname.");
+    user.setNickname(resolvedIGN).catch(err => {
+      console.error(`❌ Failed to set nickname for ${user.user.tag}:`, err);
+    });
+  } else {
+    console.warn("❌ Bot does not have permission to set nickname for this user.");
   }
 
   try {
