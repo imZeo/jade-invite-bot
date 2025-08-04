@@ -1,13 +1,13 @@
 # 🤖 Guild Recruiter Bot
 
-A lightweight Discord bot for handling guild applications with minimal friction. Applicants submit their in-game name (IGN) via a modal, and the bot posts the application in a private officer channel. Officers can promote users via a single button click — no more manual tagging or role juggling.
+A lightweight Discord bot for handling guild applications with minimal friction. Applicants submit their in-game name (IGN) via a modal, and the bot posts the application in a private officer channel. Officers can promote users via a single button click — way less manual work.
 
 ---
 
 ## ✨ Features
 
 - ✅ "Apply to Join" button in a public channel
-- 📝 Modal asks for a single field (with validation): IGN (e.g., `zeo.1026`)
+  - 📝 Modal asks for a single field (with validation): IGN (e.g., `zeo.1026`)
 - 🔒 Application is sent to a private officer channel with:
   - Discord username
   - Submitted IGN
@@ -21,17 +21,17 @@ A lightweight Discord bot for handling guild applications with minimal friction.
 
 ---
 
-## 🛠 Setup
+## 🛠 Setup (Local Development)
 
 ### 0. Create a Discord Bot
 Follow the official guide to create a bot and get your token:  
-👉 [Discord Developer Portal – Creating a Bot](https://discord.com/developers/docs/getting-started)
+👉 [Discord Developer Portal – Creating a Bot](https://discord.com/developers/docs/getting-started). Make sure to invite the bot to your server with the necessary permissions (Manage Roles, Read Messages, Send Messages, etc.).
 
 ### 1. Clone the repo
 
 ```bash
 gh repo clone imZeo/jade-invite-bot
-cd guild-recruiter-bot
+cd jade-invite-bot
 ```
 
 ### 2. Install dependencies
@@ -49,8 +49,9 @@ APPLICANT_ROLE_ID=role-id-for-applicant
 MEMBER_ROLE_ID=role-id-for-member
 OFFICER_CHANNEL_ID=channel-id-for-officer-apps
 APPLICATION_CHANNEL_ID=channel-id-for-public-applications
-NODE_ENV=development
 ```
+
+> 💡 Use [Discord Developer Mode](https://discordjs.guide/popular-topics/intents.html#enabling-privileged-intents) to find channel/role IDs.
 
 ### 4. Start the bot
 
@@ -58,26 +59,26 @@ NODE_ENV=development
 npm start
 ```
 
-Or for staging/prod (with [dotenv-flow](https://www.npmjs.com/package/dotenv-flow)):
-
-```bash
-NODE_ENV=production npm start
-```
-
 ---
 
-## 📦 Dependencies
+## 📁 File Overview
 
-- [discord.js](https://discord.js.org/) v14+
-- [dotenv](https://www.npmjs.com/package/dotenv)
-- Optional: [dotenv-flow](https://www.npmjs.com/package/dotenv-flow) for environment-specific config
+```
+.
+├── index.js                  # Main bot logic
+├── promoteUser.js            # Handles promote button click
+├── /messages
+│   └── userMessages.js       # All user-facing text
+├── /modals
+│   └── applicationModal.js   # The modal logic
+└── README.md
+```
 
 ---
 
 ## 🧼 Future Ideas
 
 - ✅ Move accepted applications to a separate thread
-- ❌ Reject button with custom message
 
 ---
 
