@@ -13,6 +13,7 @@ const {
     ButtonBuilder,
     ButtonStyle,
     EmbedBuilder,
+    MessageFlags,
 } = require("discord.js");
 
 const express = require("express");
@@ -26,8 +27,6 @@ app.get("/", (_, res) => {
 app.listen(port, () => {
     console.log(`🌐 Dummy web server running on port ${port}`);
 });
-
-const EPHEMERAL = 1 << 6;
 
 const config = {
     applicationChannelId: process.env.APPLICATION_CHANNEL_ID,
@@ -112,7 +111,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 try {
                     await interaction.reply({
                         content: "❌ Interaction timed out. Please try again.",
-                        flags: EPHEMERAL,
+                        flags: MessageFlags.Ephemeral,
                     });
                 } catch (replyErr) {
                     console.warn(
@@ -139,7 +138,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         if (!ignRegex.test(ign)) {
             return await interaction.reply({
                 content: messages.wrongIGNFormat(),
-                flags: EPHEMERAL,
+                flags: MessageFlags.Ephemeral,
             });
         }
 
@@ -191,14 +190,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
             console.error("DM error:", err);
             await interaction.reply({
                 content: messages.applicationReceived(),
-                flags: EPHEMERAL,
+                flags: MessageFlags.Ephemeral,
             });
         }
 
         if (!interaction.replied)
             await interaction.reply({
                 content: "✅ Application submitted!",
-                flags: EPHEMERAL,
+                flags: MessageFlags.Ephemeral,
             });
     }
 
@@ -213,7 +212,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
         await interaction.reply({
             content: `👍🏻 Copy IGN below:\n\`\`\`\n${ign}\n\`\`\``,
-            flags: EPHEMERAL,
+            flags: MessageFlags.Ephemeral,
         });
         return;
     }
