@@ -11,5 +11,5 @@ export function officerConfirm(userTag) {
 }
 
 export function wrongIGNFormat() {
-    return `❌ Invalid IGN format.\n\nPlease click **Apply** again and enter a valid IGN like \`Most Powerful Name.1337\`\n\nYour account name is visible on the character select screen in-game. Make sure to include the period and 4-digit number at the end.`;
+    return `❌ Invalid IGN format.\n\nPlease click **Apply** again and enter a valid IGN like \`Most Powerful Name.1337\`\n\nYour account name is visible on the [character select screen](https://wiki.guildwars2.com/images/6/63/Character_select_screen_JW.jpg) in-game (marked with 6 on the screenshot). Make sure to include the period and 4-digit number at the end.`;
 }

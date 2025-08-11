@@ -140,63 +140,84 @@ client.on(Events.InteractionCreate, async (interaction) => {
             });
         }
 
-        const member = await interaction.guild.members.fetch(
-            interaction.user.id
-        );
-        const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
+        // Defer immediately to avoid interaction timeout (3s limit)
+        try {
+            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+        } catch (err) {
+            console.error("❌ Failed to defer reply:", err);
+            return;
+        }
 
-        const officerChannel = await client.channels.fetch(
-            config.officerChannelId
-        );
-        const embed = new EmbedBuilder()
-            .setTitle("📝 New Guild Application")
-            .addFields(
-                { name: "IGN", value: ign },
-                { name: "Discord User", value: interaction.user.tag },
-                { name: "Time", value: timestamp }
-            )
-            .setColor(0xe57373)
-            .setFooter({ text: `User ID: ${interaction.user.id}` });
+        try {
+            const member = await interaction.guild.members.fetch(
+                interaction.user.id
+            );
+            const timestamp = `<t:${Math.floor(Date.now() / 1000)}:F>`;
 
-        const actionRow = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setCustomId(
-                    `copy_${interaction.user.id}_${encodeURIComponent(ign)}`
+            const officerChannel = await client.channels.fetch(
+                config.officerChannelId
+            );
+            const embed = new EmbedBuilder()
+                .setTitle("📝 New Guild Application")
+                .addFields(
+                    { name: "IGN", value: ign },
+                    { name: "Discord User", value: interaction.user.tag },
+                    { name: "Time", value: timestamp }
                 )
-                .setLabel("📋 Copy IGN")
-                .setStyle(ButtonStyle.Secondary),
+                .setColor(0xe57373)
+                .setFooter({ text: `User ID: ${interaction.user.id}` });
 
-            new ButtonBuilder()
-                .setCustomId(`promote_${interaction.user.id}`)
-                .setLabel("✅ Promote")
-                .setStyle(ButtonStyle.Success)
-        );
+            const actionRow = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId(
+                        `copy_${interaction.user.id}_${encodeURIComponent(ign)}`
+                    )
+                    .setLabel("📋 Copy IGN")
+                    .setStyle(ButtonStyle.Secondary),
 
-        await officerChannel.send({ embeds: [embed], components: [actionRow] });
+                new ButtonBuilder()
+                    .setCustomId(`promote_${interaction.user.id}`)
+                    .setLabel("✅ Promote")
+                    .setStyle(ButtonStyle.Success)
+            );
 
-        // Assign applicant role
-        try {
-            await member.roles.add(config.applicantRoleId);
-        } catch (err) {
-            console.error("Role add error:", err);
-        }
-
-        // DM fallback
-        try {
-            await member.send(messages.applicationReceived());
-        } catch (err) {
-            console.error("DM error:", err);
-            await interaction.reply({
-                content: messages.applicationReceived(),
-                flags: MessageFlags.Ephemeral,
+            await officerChannel.send({
+                embeds: [embed],
+                components: [actionRow],
             });
-        }
 
-        if (!interaction.replied)
-            await interaction.reply({
-                content: "✅ Application submitted!",
-                flags: MessageFlags.Ephemeral,
+            // Assign applicant role
+            try {
+                await member.roles.add(config.applicantRoleId);
+            } catch (err) {
+                console.error("Role add error:", err);
+            }
+
+            // DM applicant; if DM fails, fall back to showing the message in the ephemeral reply
+            let dmSucceeded = true;
+            try {
+                await member.send(messages.applicationReceived());
+            } catch (err) {
+                dmSucceeded = false;
+                console.error("DM error:", err);
+            }
+
+            await interaction.editReply({
+                content: dmSucceeded
+                    ? "✅ Application submitted!"
+                    : messages.applicationReceived(),
             });
+        } catch (err) {
+            console.error("❌ Error handling modal submit:", err);
+            try {
+                await interaction.editReply({
+                    content:
+                        "❌ Something went wrong while submitting your application. Please try again.",
+                });
+            } catch (editErr) {
+                console.error("❌ Failed to edit reply after error:", editErr);
+            }
+        }
     }
 
     // Officer promotes
