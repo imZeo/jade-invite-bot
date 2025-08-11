@@ -2,9 +2,6 @@ import { buildApplicationModal } from "./modals/applicationModal.js";
 import * as messages from "./messages/userMessages.js";
 import { promoteUser } from "./promoteUser.js";
 
-import dotenvFlow from "dotenv-flow";
-dotenvFlow.config();
-
 import {
     Client,
     GatewayIntentBits,
