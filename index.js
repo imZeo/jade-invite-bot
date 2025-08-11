@@ -1,10 +1,11 @@
-const { buildApplicationModal } = require("./modals/applicationModal");
-const messages = require("./messages/userMessages");
-const { promoteUser } = require("./promoteUser");
+import { buildApplicationModal } from "./modals/applicationModal.js";
+import * as messages from "./messages/userMessages.js";
+import { promoteUser } from "./promoteUser.js";
 
-require("dotenv-flow").config();
+import dotenvFlow from "dotenv-flow";
+dotenvFlow.config();
 
-const {
+import {
     Client,
     GatewayIntentBits,
     Partials,
@@ -14,9 +15,9 @@ const {
     ButtonStyle,
     EmbedBuilder,
     MessageFlags,
-} = require("discord.js");
+} from "discord.js";
 
-const express = require("express");
+import express from "express";
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -64,9 +65,9 @@ client.once(Events.ClientReady, async () => {
             const channel = await client.channels.fetch(
                 config.applicationChannelId
             );
-            const messages = await channel.messages.fetch({ limit: 10 });
+            const recentMessages = await channel.messages.fetch({ limit: 10 });
 
-            const existing = messages.find(
+            const existing = recentMessages.find(
                 (msg) =>
                     msg.author.id === client.user.id &&
                     msg.content.includes("Ready to join the guild?")
@@ -206,7 +207,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         await promoteUser(interaction);
     }
     // Officer clicks Copy IGN
-    if (interaction.customId.startsWith("copy_")) {
+    if (interaction.isButton() && interaction.customId.startsWith("copy_")) {
         const parts = interaction.customId.split("_");
         const ign = decodeURIComponent(parts.slice(2).join("_")); // handles underscores
 

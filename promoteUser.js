@@ -1,5 +1,5 @@
-const { EmbedBuilder } = require("discord.js");
-const messages = require("./messages/userMessages");
+import { EmbedBuilder } from "discord.js";
+import * as messages from "./messages/userMessages.js";
 
 async function safeDMHelper(user, message) {
     try {
@@ -9,7 +9,7 @@ async function safeDMHelper(user, message) {
     }
 }
 
-async function promoteUser(interaction) {
+export async function promoteUser(interaction) {
     try {
         const userId = interaction.customId.split("_")[1];
         const guild = interaction.guild;
@@ -77,5 +77,3 @@ async function promoteUser(interaction) {
         console.error("❌ Error in promoteUser:", error);
     }
 }
-
-module.exports = { promoteUser };
