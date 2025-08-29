@@ -257,7 +257,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 console.error("❌ Copy button reply failed:", err);
             }
         }
-        xw;
         return;
     }
 });
