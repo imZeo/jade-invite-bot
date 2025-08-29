@@ -229,10 +229,35 @@ client.on(Events.InteractionCreate, async (interaction) => {
         const parts = interaction.customId.split("_");
         const ign = decodeURIComponent(parts.slice(2).join("_")); // handles underscores
 
-        await interaction.reply({
-            content: `👍🏻 Copy IGN below:\n\`\`\`\n${ign}\n\`\`\``,
-            flags: MessageFlags.Ephemeral,
-        });
+        try {
+            // Fast path: try replying directly
+            await interaction.reply({
+                content: `👍🏻 Copy IGN below:\n\`\`\`\n${ign}\n\`\`\``,
+                flags: MessageFlags.Ephemeral,
+            });
+        } catch (err) {
+            if (err.code === 10062) {
+                console.warn(
+                    "⚠️ Copy button interaction expired before reply."
+                );
+            } else if (err.code === 40060) {
+                // Already acknowledged (rare race) — fallback with followUp
+                try {
+                    await interaction.followUp({
+                        content: `👍🏻 Copy IGN below:\n\`\`\`\n${ign}\n\`\`\``,
+                        flags: MessageFlags.Ephemeral,
+                    });
+                } catch (followErr) {
+                    console.error(
+                        "❌ Failed followUp for copy button:",
+                        followErr
+                    );
+                }
+            } else {
+                console.error("❌ Copy button reply failed:", err);
+            }
+        }
+        xw;
         return;
     }
 });
