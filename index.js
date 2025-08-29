@@ -142,7 +142,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
         // Defer immediately to avoid interaction timeout (3s limit)
         try {
-            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+            await interaction.deferReply({ ephemeral: true });
         } catch (err) {
             console.error("❌ Failed to defer reply:", err);
             return;
