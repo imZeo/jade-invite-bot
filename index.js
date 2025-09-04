@@ -18,6 +18,11 @@ import express from "express";
 const app = express();
 const port = process.env.PORT || 4000;
 
+app.get("/ping", async (_, res) => {
+    await new Promise((r) => setTimeout(r, 500)); // Delay for 500ms
+    res.send("👋 still alive");
+});
+
 app.get("/", (_, res) => {
     res.send("👋 Guild Recruiter Bot is running");
 });
