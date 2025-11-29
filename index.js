@@ -1,6 +1,7 @@
 import { buildApplicationModal } from "./modals/applicationModal.js";
 import * as messages from "./messages/userMessages.js";
 import { promoteUser } from "./promoteUser.js";
+import { initReactionNudge } from "./features/reactionNudge.js";
 
 import {
     Client,
@@ -45,11 +46,18 @@ const client = new Client({
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
     ],
-    partials: [Partials.Channel],
+    partials: [Partials.Channel, Partials.Message, Partials.Reaction],
 });
 
 client.once(Events.ClientReady, async () => {
     console.log(`🤖 Logged in as ${client.user.tag}`);
+
+    // Initialize reaction-based officer nudge feature
+    initReactionNudge(client, {
+        officerRoleId: process.env.OFFICER_ROLE_ID || "160807999923945472",
+        reactionDmEmoji: process.env.REACTION_DM_EMOJI || "📬",
+        windowMs: Number(process.env.REACTION_DM_WINDOW_MS || 10 * 60 * 1000),
+    });
 
     const guilds = client.guilds.cache;
 
@@ -147,7 +155,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
         // Defer immediately to avoid interaction timeout (3s limit)
         try {
-            await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+            await interaction.deferReply({ ephemeral: true });
         } catch (err) {
             console.error("❌ Failed to defer reply:", err);
             return;

@@ -13,3 +13,7 @@ export function officerConfirm(userTag) {
 export function wrongIGNFormat() {
     return `❌ Invalid IGN format.\n\nPlease click **Apply** again and enter a valid IGN like \`Most Powerful Name.1337\`\n\nYour account name is visible on the [character select screen](https://wiki.guildwars2.com/images/6/63/Character_select_screen_JW.jpg) in-game (marked with 6 on the screenshot). Make sure to include the period and 4-digit number at the end.`;
 }
+
+export function officerNudgeDM(officerTag) {
+    return `👋 Hey there! Just a quick heads-up from our officers (${officerTag}): please post guild applications using the Apply button in the [application channel](https://discord.com/channels/133189975641554944/1399366113271353477) so we can process them fast. If you need help, reply here and we’ll guide you. Thanks!`;
+}
