@@ -54,7 +54,7 @@ client.once(Events.ClientReady, async () => {
 
     // Initialize reaction-based officer nudge feature
     initReactionNudge(client, {
-        officerRoleId: process.env.OFFICER_ROLE_ID || "160807999923945472",
+        officerRoleId: process.env.OFFICER_ROLE_ID || "1444464204797968495",
         reactionDmEmoji: process.env.REACTION_DM_EMOJI || "📬",
         windowMs: Number(process.env.REACTION_DM_WINDOW_MS || 10 * 60 * 1000),
     });

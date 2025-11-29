@@ -28,6 +28,15 @@ export function initReactionNudge(
 ) {
     client.on(Events.MessageReactionAdd, async (reaction, user) => {
         try {
+            console.log("🔔 ReactionAdd event:", {
+                messageId: reaction?.message?.id,
+                channelId: reaction?.message?.channelId,
+                guildId: reaction?.message?.guild?.id,
+                reactorId: user?.id,
+                emojiName: reaction?.emoji?.name,
+                emojiId: reaction?.emoji?.id,
+                configured: reactionDmEmoji,
+            });
             // Fetch partials if needed
             if (reaction.partial) await reaction.fetch();
             if (reaction.message.partial) await reaction.message.fetch();
@@ -40,13 +49,27 @@ export function initReactionNudge(
             if (user.bot) return;
 
             // Emoji match
-            if (!emojiMatches(reaction, reactionDmEmoji)) return;
+            const matched = emojiMatches(reaction, reactionDmEmoji);
+            console.log("🔍 Emoji match:", {
+                emojiSeen: reaction.emoji.name,
+                emojiId: reaction.emoji.id,
+                configured: reactionDmEmoji,
+                matched,
+            });
+            if (!matched) return;
 
             const member = await guild.members.fetch(user.id).catch(() => null);
             if (!member) return;
 
             // Permission: must have officer role
-            if (!member.roles.cache.has(officerRoleId)) return;
+            const hasRole = member.roles.cache.has(officerRoleId);
+            console.log("🛡️ Officer role check:", {
+                officerRoleId,
+                reactorId: member.id,
+                hasRole,
+                topRole: member.roles.highest?.id,
+            });
+            if (!hasRole) return;
 
             const targetUser = reaction.message.author;
             if (!targetUser || targetUser.bot) return;
@@ -54,7 +77,15 @@ export function initReactionNudge(
             const messageId = reaction.message.id;
             const now = Date.now();
             const last = rateMap.get(messageId) || 0;
-            if (now - last < windowMs) return; // rate limited
+            const withinWindow = now - last < windowMs;
+            console.log("⏱️ Rate limit check:", {
+                messageId,
+                lastSentTs: last,
+                now,
+                windowMs,
+                withinWindow,
+            });
+            if (withinWindow) return; // rate limited
 
             // Send DM
             try {
