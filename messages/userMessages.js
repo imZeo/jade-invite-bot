@@ -17,3 +17,7 @@ export function wrongIGNFormat() {
 export function officerNudgeDM(officerTag) {
     return `👋 Hey there! A quick heads-up from our officers: please post guild applications using the Apply to Join button in the [application channel](https://discord.com/channels/133189975641554944/1399366113271353477) so we can process them speedily. If you need help, reply here tagging @Officers, and we’ll guide you. Thanks!`;
 }
+
+export function officerNudgePublic(officerTag, targetUserId) {
+    return `👋 Hey <@${targetUserId}>! An ask from the Jade officers: please use the Apply to Join button in the <#1399366113271353477> channel so we can process you harder, better, faster, stronger. If you need help, tag the officers and we'll guide you. Thanks!`;
+}

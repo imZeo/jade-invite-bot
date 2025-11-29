@@ -56,19 +56,23 @@ export function initReactionNudge(
             const last = rateMap.get(messageId) || 0;
             if (now - last < windowMs) return; // rate limited
 
-            // Send DM
+            // Public channel reply
             try {
-                await targetUser.send(messages.officerNudgeDM(member.user.tag));
+                const replyContent = messages.officerNudgePublic(
+                    member.user.tag,
+                    targetUser.id
+                );
+                await reaction.message.reply({ content: replyContent });
                 rateMap.set(messageId, now);
                 // Acknowledge by re-reacting (idempotent)
                 await reaction.message.react(reactionDmEmoji).catch(() => {});
                 console.log(
-                    `📨 Nudge DM sent to ${targetUser.tag} by ${member.user.tag}`
+                    `💬 Nudge message posted for ${targetUser.tag} by ${member.user.tag}`
                 );
-            } catch (dmErr) {
+            } catch (postErr) {
                 console.warn(
-                    `❌ Couldn't DM ${targetUser.tag}:`,
-                    dmErr.message
+                    `❌ Couldn't post public nudge for ${targetUser.tag}:`,
+                    postErr.message
                 );
             }
         } catch (err) {
