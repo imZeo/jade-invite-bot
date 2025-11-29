@@ -15,5 +15,5 @@ export function wrongIGNFormat() {
 }
 
 export function officerNudgeDM(officerTag) {
-    return `👋 Hey there! Just a quick heads-up from our officers (${officerTag}): please post guild applications using the Apply button in the [application channel](https://discord.com/channels/133189975641554944/1399366113271353477) so we can process them fast. If you need help, reply here and we’ll guide you. Thanks!`;
+    return `👋 Hey there! A quick heads-up from our officers: please post guild applications using the Apply to Join button in the [application channel](https://discord.com/channels/133189975641554944/1399366113271353477) so we can process them speedily. If you need help, reply here tagging @Officers, and we’ll guide you. Thanks!`;
 }
